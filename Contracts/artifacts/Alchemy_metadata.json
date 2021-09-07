@@ -64,10 +64,22 @@
 						"type": "uint256"
 					},
 					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "quantity",
+								"type": "uint256"
+							}
+						],
 						"indexed": true,
-						"internalType": "uint256[]",
+						"internalType": "struct Alchemy.ingredient[]",
 						"name": "ingredients",
-						"type": "uint256[]"
+						"type": "tuple[]"
 					}
 				],
 				"name": "RecipeAdded",
@@ -174,9 +186,21 @@
 						"type": "uint256"
 					},
 					{
-						"internalType": "uint256[]",
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "quantity",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Alchemy.ingredient[]",
 						"name": "ingredients",
-						"type": "uint256[]"
+						"type": "tuple[]"
 					}
 				],
 				"name": "AddRecipe",
@@ -203,7 +227,13 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "targetId",
+						"type": "uint256"
+					}
+				],
 				"name": "CraftCards",
 				"outputs": [],
 				"stateMutability": "nonpayable",
@@ -226,7 +256,12 @@
 				"outputs": [
 					{
 						"internalType": "uint256",
-						"name": "",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
 						"type": "uint256"
 					}
 				],
@@ -279,6 +314,52 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "burn",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "ids",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "values",
+						"type": "uint256[]"
+					}
+				],
+				"name": "burnBatch",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -523,11 +604,11 @@
 	},
 	"sources": {
 		"Contracts/Alchemy.sol": {
-			"keccak256": "0x1fabd33f9066aac495cd20c1b1017a941b14c0b9a511052cab13c4d45e6bfbe2",
+			"keccak256": "0xec0aede73736dd6190b5910d2e222e8d8e2b110bd66ce898baf627e5426a190f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b3e1fbfd3870fad9a60eb3a0e7e0f95a9392486e9bada2661f309ab0e6f5486b",
-				"dweb:/ipfs/QmNuA9h5KiugZtr5WrCFgysDJcmzgYe5qpXXBm4UfuNNyj"
+				"bzz-raw://e715848992f78d6e4b06088594879e93b77de63d97b04a7691a8ac6cd21ad430",
+				"dweb:/ipfs/QmbayJetChnyuj5kqAFHDnWXjx6aALXfXz2C2TA4rcrtxu"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol": {
@@ -560,6 +641,14 @@
 			"urls": [
 				"bzz-raw://b83b3b09ef36374c1c104ee896797dadf2e81466d2143b481d3f1ddc7d9f3873",
 				"dweb:/ipfs/QmSWtqs28RHDezRWBbmEfqiPYwsGTKj44NRbuxvZ96cqMU"
+			]
+		},
+		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/ERC1155Burnable.sol": {
+			"keccak256": "0xedf8db444aa542739a0aabe8243a4e8100003aacba9783637a75f16bb556ab44",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6b3f242e6ec10ddbd8bf810a92335e827aa4e071521abe0122e563436d6722ae",
+				"dweb:/ipfs/QmdN3gQ5dwjveFwX5EBdUbQhdiiiJ8r7SwMWGb9oQ6MrJs"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol": {
