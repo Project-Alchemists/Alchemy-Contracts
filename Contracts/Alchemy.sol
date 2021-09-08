@@ -17,9 +17,15 @@ contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase{
         address senderAddress;
     }
     
+    struct buyerRequirement{
+        uint256 id;
+        uint256 quantity;
+        uint256 price;
+    }
     mapping(uint256=>ingredient[]) public RecipeBook;
     mapping(address=>bool) public userSignUp;
     mapping(bytes32=>packSale) internal packSaleInfo;
+    mapping(address=>buyerRequirement[]) internal buyerInfo;
     
     bytes32 internal keyHash;
     uint256 internal fee;
@@ -88,9 +94,21 @@ contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase{
         return userSignUp[msg.sender];
     }
     
-    function Sales() external payable{
-        //sales logic
+    function PutBuyRequest(uint256 id,uint256 quantity) external payable{
+        buyerRequirement memory requirement;
+        requirement.id = id;
+        requirement.quantity = quantity;
+        requirement.price = msg.value;
+        buyerInfo[msg.sender].push(requirement);
     }
+    
+    function RemoveBuyRequest(uint256 requestId) external {
+        require(requestId < buyerInfo[msg.sender].length,"Alchemy: Invalid requestId");
+        uint256 amount = buyerInfo[msg.sender][requestId].price;
+        delete buyerInfo[msg.sender][requestId];
+        payable(msg.sender).transfer(amount);
+    }
+    
     function PrizeRetrieve() external{
         //check if user has the top NFT, if yes burn that and give user a prize amount
     }

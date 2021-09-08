@@ -264,6 +264,24 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					}
+				],
+				"name": "PutBuyRequest",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
 					},
@@ -287,6 +305,19 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "requestId",
+						"type": "uint256"
+					}
+				],
+				"name": "RemoveBuyRequest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -689,11 +720,11 @@
 	},
 	"sources": {
 		"Contracts/Alchemy.sol": {
-			"keccak256": "0xe6c0e4f44d517dc0c860afbeb0393ac754eaa81b86e3b6a61310681481ce6483",
+			"keccak256": "0x8352848d303b417b4629d5e8e13cc1dd55e020b04f9fdc3ff9ee76483364f170",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://8c4b0a79b5bde5a0006708b9b60f1dc8ee2a5afd669f8424fddfdea769cf6817",
-				"dweb:/ipfs/QmSVGX4BuXXgmFNvn358815BevUDLYEYuJ1tsezjFgPeHn"
+				"bzz-raw://84557308bdc7dec24231c3be8b573a6ce901c5e199bb336a8059d4b643f8cf14",
+				"dweb:/ipfs/QmcLqd5GRhCEBJjxbzXsorboR3odGzWV6Lt6D1KcU6XHnF"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol": {
