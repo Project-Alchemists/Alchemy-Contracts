@@ -7,6 +7,8 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/VRFConsumerBase.sol";
 contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase{
     
+    uint public randomNum;
+    
     struct ingredient{
         uint256 id;
         uint256 quantity;
@@ -17,21 +19,29 @@ contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase{
         address senderAddress;
     }
     
-    struct buyerRequirement{
-        uint256 id;
+    struct requirement{
         uint256 quantity;
         uint256 price;
     }
+    
+
     mapping(uint256=>ingredient[]) public RecipeBook;
-    mapping(address=>bool) public userSignUp;
     mapping(bytes32=>packSale) internal packSaleInfo;
-    mapping(address=>buyerRequirement[]) internal buyerInfo;
+    mapping(address=>uint256) public userBalance;
+    
+    //double mapping address to id to quantity,price 
+    mapping(address=>mapping(uint256=>requirement)) internal buyerInfo;
+    mapping(address=>mapping(uint256=>requirement)) internal sellerInfo;
     
     bytes32 internal keyHash;
     uint256 internal fee;
     
+    address internal AlchemySalesAddress;
+    
     event RecipeAdded(uint256 indexed targetId,ingredient[] indexed ingredients);
     event UserSignedUp(address indexed userAddress);
+    event PackSale(address indexed userAddress,uint[] indexed cardsIdAdded);
+    
     
     constructor() ERC1155("https://game.example/api/item/{id}.json") 
     VRFConsumerBase(0x8C7382F9D8f56b33781fE506E897a4F1e2d17255,0x326C977E6efc84E512bB9C30f76E30c160eD06FB) {
@@ -39,8 +49,28 @@ contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase{
         fee = 0.0001 * 10 ** 18; 
     }
     
+    function SetAlchemySalesAddress(address salesAddress) external onlyOwner {
+        AlchemySalesAddress = salesAddress;
+    }
+    
+    function EnableSales() external {
+        setApprovalForAll(AlchemySalesAddress,true);
+    }
+    
+    function DisableSales() external{
+        for(uint i=0;i<10;i++)
+        {
+            delete sellerInfo[msg.sender][i];
+            
+        }
+        setApprovalForAll(AlchemySalesAddress,false);
+    }
+    
     function InitiatePackSale(uint256 packSize) external payable returns(bytes32){
         require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
+        require(msg.value == 0.01 ether + packSize*0.01 ether,"Alchemy: User needs to pay value");
+        require(packSize < 3,"Alchemy: Pack size is not supported");
+        userBalance[owner()] += msg.value;
         bytes32 requestId = requestRandomness(keyHash,fee);
         packSaleInfo[requestId].size = packSize;
         packSaleInfo[requestId].senderAddress = msg.sender;
@@ -48,15 +78,24 @@ contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase{
     } 
     
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
+        randomNum = randomness;
         uint256 randomResult = randomness;
-        uint256 size = packSaleInfo[requestId].size;
+        uint256 size = 5+(packSaleInfo[requestId].size*5);
         address sender = packSaleInfo[requestId].senderAddress;
         
-        //_mintBatch(sender,tokenIds,mintQuantity,"");
-        
-        //add logic to mint based on random numbers (_mintBatch)
         delete packSaleInfo[requestId];
+        uint[] memory cardArray = new uint[](size);
+    
+        for(uint i=0;i<size;i++){
+            uint16 modulo = uint16(randomResult%100);
+            randomResult = randomResult/100;
+            cardArray[i] = modulo%6;
+        }
         
+        for(uint i=0;i<size;i++){
+            _mint(sender,cardArray[i],1,"");
+        }
+        emit PackSale(sender,cardArray);
     }
     
     function CraftCards(uint256 targetId) external {
@@ -84,32 +123,65 @@ contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase{
         emit RecipeAdded(targetId,ingredients);
     }
     
-    function SignUp() external payable{
-        require(!userSignUp[msg.sender],"Alchemy: User is already signed up");
-        require(msg.value == 0.5 ether,"Alchemy: User needs to send 0.5 Eth to sign up");
-        userSignUp[msg.sender] = true;
-    }
-    
-    function SignIn() external view returns(bool){
-        return userSignUp[msg.sender];
-    }
     
     function PutBuyRequest(uint256 id,uint256 quantity) external payable{
-        buyerRequirement memory requirement;
-        requirement.id = id;
-        requirement.quantity = quantity;
-        requirement.price = msg.value;
-        buyerInfo[msg.sender].push(requirement);
+        uint length = RecipeBook[id].length;
+        require(length > 0,"Alchemy: Target item can't be bought in marketplace");
+        requirement memory buyerRequirement;
+        buyerRequirement.quantity = quantity;
+        buyerRequirement.price = msg.value;
+        buyerInfo[msg.sender][id].quantity += quantity;
+        buyerInfo[msg.sender][id].price += msg.value;
     }
     
+    // function ModifyBuyRequest(uint256[] id,uint256[] quantity){
+    //     idLength = id.length;
+    //     quantityLength = quantity.length;
+    //     require(idLength == quantityLength,"Alchemy: Array lengths don't match");
+    //     for(uint i =0;i<idLength;i++){
+    //         uint length = RecipeBook[id[i]].length;
+    //         require(length > 0,"Alchemy: Target item can't be bought in marketplace");
+    //     }
+    //     for(uint i=0;i<idLength;i++){
+    //         ui
+    //     }
+        
+    // }
     function RemoveBuyRequest(uint256 requestId) external {
-        require(requestId < buyerInfo[msg.sender].length,"Alchemy: Invalid requestId");
+        require(buyerInfo[msg.sender][requestId].quantity > 0,"Alchemy: Invalid requestId");
         uint256 amount = buyerInfo[msg.sender][requestId].price;
         delete buyerInfo[msg.sender][requestId];
         payable(msg.sender).transfer(amount);
     }
     
-    function PrizeRetrieve() external{
-        //check if user has the top NFT, if yes burn that and give user a prize amount
+    function PutSaleRequest(uint256 id,uint256 quantity,uint256 price) external{
+        require(isApprovedForAll(msg.sender,AlchemySalesAddress),"Alchemy: Sales haven't been enabled but sender");
+        require(balanceOf(msg.sender,id) > quantity,"Alchemy: Sender doesn't have enough token balance");
+        sellerInfo[msg.sender][id].quantity = quantity;
+        sellerInfo[msg.sender][id].price = price;
     }
+    
+    function RetrieveFunds() external {
+        uint256 balance = userBalance[msg.sender];
+        userBalance[msg.sender] = 0;
+        payable(msg.sender).transfer(balance);
+    }
+    
+    // function PrizeRetrieve() external{
+    //     //check if user has the top NFT, if yes burn that and give user a prize amount
+        
+    // }
 }
+
+// contract AlchemySales is Ownable{
+    
+//     address internal AlchemyAddress;
+    
+//     function SetAlchemyAddress(address AlcAddress) external onlyOwner{
+//         AlchemyAddress = AlcAddress;
+//     } 
+    
+//     function PurchaseFromMarket() external payable{
+//         Alchemy A = Alchemy(AlchemyAddress);
+//     }
+// }

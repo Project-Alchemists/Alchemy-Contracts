@@ -59,6 +59,25 @@
 				"inputs": [
 					{
 						"indexed": true,
+						"internalType": "address",
+						"name": "userAddress",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256[]",
+						"name": "cardsIdAdded",
+						"type": "uint256[]"
+					}
+				],
+				"name": "PackSale",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
 						"internalType": "uint256",
 						"name": "targetId",
 						"type": "uint256"
@@ -235,6 +254,20 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "DisableSales",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "EnableSales",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -254,13 +287,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "PrizeRetrieve",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -276,6 +302,29 @@
 				"name": "PutBuyRequest",
 				"outputs": [],
 				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					}
+				],
+				"name": "PutSaleRequest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -322,29 +371,22 @@
 			},
 			{
 				"inputs": [],
-				"name": "Sales",
+				"name": "RetrieveFunds",
 				"outputs": [],
-				"stateMutability": "payable",
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "SignIn",
-				"outputs": [
+				"inputs": [
 					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
+						"internalType": "address",
+						"name": "salesAddress",
+						"type": "address"
 					}
 				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "SignUp",
+				"name": "SetAlchemySalesAddress",
 				"outputs": [],
-				"stateMutability": "payable",
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -473,6 +515,19 @@
 						"internalType": "address",
 						"name": "",
 						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "randomNum",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -646,12 +701,12 @@
 						"type": "address"
 					}
 				],
-				"name": "userSignUp",
+				"name": "userBalance",
 				"outputs": [
 					{
-						"internalType": "bool",
+						"internalType": "uint256",
 						"name": "",
-						"type": "bool"
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -720,11 +775,11 @@
 	},
 	"sources": {
 		"Contracts/Alchemy.sol": {
-			"keccak256": "0x8352848d303b417b4629d5e8e13cc1dd55e020b04f9fdc3ff9ee76483364f170",
+			"keccak256": "0xf5eb57c645e792bf952830b3833c99560c1881febc5c237dd607ff1b1331aa3b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://84557308bdc7dec24231c3be8b573a6ce901c5e199bb336a8059d4b643f8cf14",
-				"dweb:/ipfs/QmcLqd5GRhCEBJjxbzXsorboR3odGzWV6Lt6D1KcU6XHnF"
+				"bzz-raw://cd39b6c99d4349922ec115da6078ca2c7b0d0c2de2c890c8c81218f2e7edcdbe",
+				"dweb:/ipfs/QmTxHimzhAU6dGhEoT1EdaZDLg4dfd2TAv8u3m7f4Tkigc"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol": {
