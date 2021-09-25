@@ -6,10 +6,14 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 import "https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/VRFConsumerBase.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 
 contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase,ReentrancyGuard{
     
-    uint public randomNum;
+    using Counters for Counters.Counter;
+    
+    Counters.Counter private _storeListing;
+    Counters.Counter private _soldItems;
     
     struct ingredient{
         uint256 id;
@@ -22,16 +26,24 @@ contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase,ReentrancyGu
     }
 
     struct sales{
+        uint256 tokenId;
         uint256 price;
         uint256 quantity;
+        address seller;
     }
 
     mapping(uint256=>ingredient[]) public RecipeBook;
     mapping(bytes32=>packSale) internal packSaleInfo;
     mapping(address=>uint256) public userBalance;
+
+    //marketplace listing - uint to sale
+    mapping(uint256=>sales) marketplaceListing;
     
-    //mapping user address to token id to sales info
-    mapping(address=>mapping(uint256=>sales)) userSaleInfo;
+    //user sales info - address to listing id array
+    mapping(address=>uint256[]) userSalesList;
+    
+    //locked balance - address,token Id to locked amount
+    mapping(address=>mapping(uint256=>uint256)) userLockedAmount;
     
     bytes32 internal keyHash;
     uint256 internal fee;
@@ -65,7 +77,6 @@ contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase,ReentrancyGu
     } 
     
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-        randomNum = randomness;
         uint256 randomResult = randomness;
         uint256 size = 5+(packSaleInfo[requestId].size*5);
         address sender = packSaleInfo[requestId].senderAddress;
@@ -112,28 +123,99 @@ contract Alchemy is ERC1155,Ownable,ERC1155Burnable,VRFConsumerBase,ReentrancyGu
     
     
     function SellOnMarket(uint256 tokenId,uint256 quantity,uint256 price) external{
-        require(userSaleInfo[msg.sender][tokenId].quantity == 0,"Alchemy: Tokens already on sale, use modify instead");
         require(quantity > 0,"Alchemy: Need to sell at least 1 token");
-        require(balanceOf(msg.sender,tokenId) >= quantity,"Alchemy: Not enough balance to sell");
+        require(balanceOf(msg.sender,tokenId) - userLockedAmount[msg.sender][tokenId] >= quantity,"Alchemy: Not enough balance to sell");
+        require(RecipeBook[tokenId].length > 0,"Alchemy: This token can't be sold");
         setApprovalForAll(AlchemySalesAddress,true);
-        userSaleInfo[msg.sender][tokenId].quantity = quantity;
-        userSaleInfo[msg.sender][tokenId].price = price;
+        _storeListing.increment();
+        uint256 listingId = _storeListing.current();
+        marketplaceListing[listingId] = sales(
+            tokenId,
+            price,
+            quantity,
+            msg.sender
+        );
+        userSalesList[msg.sender].push(listingId);
+        userLockedAmount[msg.sender][tokenId] += quantity;
     }
     
-    function ModifySalesInfo(uint256 tokenId,uint256 quantity,uint256 price) external{
-        require(userSaleInfo[msg.sender][tokenId].quantity > 0,"Alchemy: Tokens are not on sale, use SellOnMarket instead");
-        require(balanceOf(msg.sender,tokenId) >= quantity,"Alchemy: Not enough balance to sell");
-        userSaleInfo[msg.sender][tokenId].quantity = quantity;
-        userSaleInfo[msg.sender][tokenId].price = price;
+    function GetUserSalesList() external view returns(uint256[] memory){
+        return userSalesList[msg.sender];
     }
     
-    function BuyFromMarket(uint256 tokenId,address fromAddress,address toAddress,uint256 quantity) external payable{
-        require(userSaleInfo[fromAddress][tokenId].quantity > quantity,"Alchemy: Not enough tokens to purchase");
+    function GetMarketListingById(uint256 listingId) external view returns(sales memory){
+        return marketplaceListing[listingId];
+    }
+    
+    function GetStoreListingCount() external view returns(uint256){
+        return  _storeListing.current() - _soldItems.current();
+    }
+    function GetAllMarketPlaceListings() external view returns(sales[] memory){
+        uint256 length = _storeListing.current() - _soldItems.current();
+        uint256 currentIndex = 0;
+        sales[] memory allSales = new sales[](length);
+        for(uint256 i=1;i<=_storeListing.current();i++){
+            if(marketplaceListing[i].quantity > 0){
+                allSales[currentIndex] = (marketplaceListing[i]);
+                currentIndex++;
+            }
+        }
+        return allSales;
+    }
+    
+    function GetUserLockedBalance(uint256 tokenId) external view returns(uint256){
+        return userLockedAmount[msg.sender][tokenId];
+    }
+    
+    function RemoveListing(uint256 listingId) external{
+        require(marketplaceListing[listingId].seller == msg.sender,"Alchemy: Only seller can remove listing");
+        require(marketplaceListing[listingId].quantity > 0,"Alchemy: No tokens left to remove from listing");
+        sales memory userListing = marketplaceListing[listingId];
+        delete marketplaceListing[listingId];
+        userLockedAmount[userListing.seller][userListing.tokenId] -= userListing.quantity;
+        _soldItems.increment();
+    }
+    
+    
+    function ModifyListing(uint256 listingId,uint256 quantity,uint256 price) external{
+        sales memory listing = marketplaceListing[listingId];
+        
+        require(listing.seller == msg.sender,"Alchemy: Only seller can modify listing");
+        require(quantity != 0,"Alchemy: Consider using remove listing instead");
+        require(price != 0,"Alchemy: You really want to sell it for free?");
+        
+        if(quantity > listing.quantity){
+            uint extra = quantity - listing.quantity;
+            require(balanceOf(msg.sender,listing.tokenId) >=
+            (userLockedAmount[msg.sender][listing.tokenId]+extra),"Alchemy: Not enough balance to sell");
+            userLockedAmount[listing.seller][listing.tokenId] += extra;
+        }
+        else if(quantity < listing.quantity){
+            uint extra = listing.quantity - quantity;
+            userLockedAmount[listing.seller][listing.tokenId] -= extra;
+        }
+        
+        marketplaceListing[listingId] = sales(
+            listing.tokenId,
+            price,
+            quantity,
+            listing.seller
+        );
+        
+    }
+    
+    function BuyFromMarket(uint256 listingId,address toAddress,uint256 quantity) external payable nonReentrant{
+        require(marketplaceListing[listingId].quantity >= quantity,"Alchemy: Not enough tokens to purchase");
         require(quantity > 0,"Alchemy: Need to buy at least 1 token");
-        require(msg.value >= quantity*userSaleInfo[fromAddress][tokenId].price,"Alchemy: Not enough value paid");
-        safeTransferFrom(fromAddress,toAddress,tokenId,quantity,"");
-        userBalance[fromAddress] += msg.value;
-        userSaleInfo[fromAddress][tokenId].quantity -= quantity;
+        require(msg.value >= quantity*marketplaceListing[listingId].price,"Alchemy: Not enough value paid");
+        sales memory listing = marketplaceListing[listingId];
+        safeTransferFrom(listing.seller,toAddress,listing.tokenId,quantity,"");
+        userBalance[listing.seller] += msg.value;
+        userLockedAmount[listing.seller][listing.tokenId] -= quantity;
+        marketplaceListing[listingId].quantity -= quantity;
+        if(marketplaceListing[listingId].quantity == 0){
+            _soldItems.increment();
+        }
     }
     
     function RetrieveFunds() external nonReentrant{
@@ -154,8 +236,8 @@ contract AlchemySales is Ownable{
         AlchemyAddress = AlcAddress;
     } 
     
-    function PurchaseFromMarket(uint256 tokenId,address fromAddress,uint256 quantity) external payable{
+    function PurchaseFromMarket(uint256 listingId,uint256 quantity) external payable{
         Alchemy A = Alchemy(AlchemyAddress);
-        A.BuyFromMarket{value:msg.value}(tokenId,fromAddress,msg.sender,quantity);
+        A.BuyFromMarket{value:msg.value}(listingId,msg.sender,quantity);
     }
 }
