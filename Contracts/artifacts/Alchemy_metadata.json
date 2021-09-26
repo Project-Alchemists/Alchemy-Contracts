@@ -408,9 +408,9 @@
 				"name": "InitiatePackSale",
 				"outputs": [
 					{
-						"internalType": "bytes32",
+						"internalType": "uint256[]",
 						"name": "",
-						"type": "bytes32"
+						"type": "uint256[]"
 					}
 				],
 				"stateMutability": "payable",
@@ -656,24 +656,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "bytes32",
-						"name": "requestId",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "uint256",
-						"name": "randomness",
-						"type": "uint256"
-					}
-				],
-				"name": "rawFulfillRandomness",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
 				"inputs": [],
 				"name": "renounceOwnership",
 				"outputs": [],
@@ -882,7 +864,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Contracts/Alchemy.sol": "Alchemy"
+			"Contracts/AlchemyHarmony.sol": "Alchemy"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -896,12 +878,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Contracts/Alchemy.sol": {
-			"keccak256": "0x63496a8c24a8f846785c40cd41a27c6520cfc79a0a353681a896655624a0a40d",
+		"Contracts/AlchemyHarmony.sol": {
+			"keccak256": "0xa2b9c1c7cb1c0beb2f2319c74865105f4226955089716619f408e80d036cd139",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://f11f848bedda83914e778380717dc2f4934d0a7bd1fb1035d54dd3ff75ce3c0b",
-				"dweb:/ipfs/QmNsGkTeNJTs1DDMBnqWVR6LLavrf8NQ9S1zq4JHiHTJfd"
+				"bzz-raw://1e0090d252061ad2669d02db0dcc6b6e2e2954a72cbef4d6fe3d8d1ef07b1a48",
+				"dweb:/ipfs/Qma4wKGYUzy9qLjBg49cLDC5HepFAPhTWN5qxZLmyYxzvk"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol": {
@@ -998,30 +980,6 @@
 			"urls": [
 				"bzz-raw://796ab6e88af7bf0e78def0f059310c903af6a312b565344e0ff524a0f26e81c6",
 				"dweb:/ipfs/QmcsVgLgzWdor3UnAztUkXKNGcysm1MPneWksF72AvnwBx"
-			]
-		},
-		"https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/VRFConsumerBase.sol": {
-			"keccak256": "0x778c9d88cd6d94ae866c1c3f5fec6022f07e39280d3b6d581c8cceb8a5ac4b1e",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://a2fe7cac98f6c86e4e3ef299bb91f3917d4171548e39da72c7da392c9d5d5815",
-				"dweb:/ipfs/QmT8jh2DR1VU8554hGMbjX6BkACT96FZBETbN5KkStBvYP"
-			]
-		},
-		"https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/VRFRequestIDBase.sol": {
-			"keccak256": "0x2bf1168e8fe548fa990e0aeaf89ef90680f80aa31eeaf901f485df60de51d51b",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://79c72d66deaa4b0f251f3f0817f45ebceb71f5b4f94a86ac0e586de99f5af2b6",
-				"dweb:/ipfs/QmcHkApHm5CAynjajcCUYppaKJ9sNWGZTEcSs4tUK8B5K5"
-			]
-		},
-		"https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/interfaces/LinkTokenInterface.sol": {
-			"keccak256": "0xc7d7cd730d36825485ef4107d93c3ff18b9f3a5a00ea3d5988ba9a0bd70b10c5",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://8cb1064885ecbcd9c3adba779e190cb4a538e5d4d15aeccb67d3376bdffc94bd",
-				"dweb:/ipfs/QmcQHK6ewve7tFi4XXK65JthQg4kQzApQikWcURJjGt4iQ"
 			]
 		}
 	},

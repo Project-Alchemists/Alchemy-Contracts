@@ -1,0 +1,98 @@
+{
+	"compiler": {
+		"version": "0.8.7+commit.e28d00a7"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "packSize",
+						"type": "uint256"
+					}
+				],
+				"name": "InitiatePackSale",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "randomNumber",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "vrf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "result",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"Contracts/VRFtest.sol": "test"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"Contracts/VRFtest.sol": {
+			"keccak256": "0x171c845f12a30fd666dc8ecc75233e205b6df874ee6e8d45e5ae9faf742c7cf2",
+			"urls": [
+				"bzz-raw://e6047b6a32aa4159fae2b76de67af6d3a6a7fb33414893b91672dfdbeae0e737",
+				"dweb:/ipfs/QmWVUKRgJyveuPWyYtYFxjRGTE2cQcnLdcpbmJk6hNWVmZ"
+			]
+		},
+		"https://github.com/GNSPS/solidity-bytes-utils/blob/master/contracts/BytesLib.sol": {
+			"keccak256": "0xf75784dfc94ea43668eb195d5690a1dde1b6eda62017e73a3899721583821d29",
+			"license": "Unlicense",
+			"urls": [
+				"bzz-raw://ca16cef8b94f3ac75d376489a668618f6c4595a906b939d674a883f4bf426014",
+				"dweb:/ipfs/QmceGU7qhyFLSejaj6i4dEtMzXDCSF3aYDtW1UeKjXQaRn"
+			]
+		}
+	},
+	"version": 1
+}
