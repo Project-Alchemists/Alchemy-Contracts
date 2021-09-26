@@ -1,0 +1,7 @@
+{
+	"tokenID": 9,
+	"name": "Computer",
+	"description": "The thing you're addicted to",
+	"gen": "2",
+	"recipe": ["Motherboard", "Monitor", "Case"]
+}

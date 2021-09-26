@@ -1,0 +1,7 @@
+{
+	"tokenID": 6,
+	"name": "Motherboard",
+	"description": "The mother of all computers",
+	"gen": "1",
+	"recipe": ["Iron", "Gold", "Copper", "Plastic", "Silicon"]
+}

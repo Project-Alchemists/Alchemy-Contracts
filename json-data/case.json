@@ -1,0 +1,7 @@
+{
+	"tokenID": 8,
+	"name": "Case",
+	"description": "The stuff that houses everything",
+	"gen": "1",
+	"recipe": ["Plastic", "Iron"]
+}
