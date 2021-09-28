@@ -3,5 +3,5 @@
 	"name": "Motherboard",
 	"description": "The mother of all computers",
 	"gen": "1",
-	"recipe": ["Iron", "Gold", "Copper", "Plastic", "Silicon"]
+	"recipe": [0,1,5,4,2]
 }
