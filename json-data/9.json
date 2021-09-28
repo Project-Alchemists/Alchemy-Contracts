@@ -3,5 +3,5 @@
 	"name": "Computer",
 	"description": "The thing you're addicted to",
 	"gen": "2",
-	"recipe": ["Motherboard", "Monitor", "Case"]
+	"recipe": [6,7,8]
 }

@@ -3,5 +3,5 @@
 	"name": "Case",
 	"description": "The stuff that houses everything",
 	"gen": "1",
-	"recipe": ["Plastic", "Iron"]
+	"recipe": [4,0]
 }

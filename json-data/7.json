@@ -3,5 +3,5 @@
 	"name": "Monitor",
 	"description": "Where you watch cat videos on your computer",
 	"gen": "1",
-	"recipe": ["Glass", "Copper", "Plastic"]
+	"recipe": [3,5,4]
 }
