@@ -54,7 +54,7 @@ contract Alchemy is ERC1155,Ownable,ERC1155Burnable,ReentrancyGuard{
     event PackSale(address indexed userAddress,uint[] indexed cardsIdAdded);
     
     
-    constructor() ERC1155("https://game.example/api/item/{id}.json") 
+    constructor() ERC1155("https://raw.githubusercontent.com/Project-Alchemists/Alchemy-Contracts/main/json-data/{id}.json") 
     {
     
     }
