@@ -26,7 +26,6 @@
 `function GetAllMarketPlaceListings() external view returns(sales[] memory)`
 <br>- Get all MarketPlace listings
 <br   >
-_______________________________________________________________________________________________________
 
 ## Deployed Contract
 Contract has been deployed on Harmony Testnet.<br>
